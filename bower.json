@@ -1,0 +1,19 @@
+{
+  "name": "jquery-map-picker",
+  "version": "0.1.0",
+  "authors": [
+    "greatghoul <greatghoul@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
