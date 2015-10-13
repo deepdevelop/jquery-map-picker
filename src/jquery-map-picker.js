@@ -1,14 +1,15 @@
-import MapPicker from './map-picker';
-
 jQuery.fn.mapPicker = function(options={}) {
   this.each(function() {
     var $element = $(this);
     var settings = $.extend({
-      adapter: 'amap'
+      map: 'amap'
     }, options);
 
     if (!$element.data('map-picker')) {
-      $element.data('map-picker', new MapPicker(settings));
+      var MapPicker =jQuery.fn.mapPicker.maps[settings.map];
+      $element.data('map-picker', new MapPicker($element, settings));
     }
   });
 };
+
+jQuery.fn.mapPicker.maps = [];

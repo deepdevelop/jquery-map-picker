@@ -8,17 +8,19 @@ module.exports = function(grunt) {
       options: {
         esnext: true
       },
-      all: ['Gruntfile.js', 'src/**/*.js']
+      files: ['Gruntfile.js', 'src/**/*.js']
     },
 
+
     browserify: {
-      dist: {
-        options: {
-          transform: [["babelify", { stage: 0 }]]
-        },
-        files: {
-          "dist/jquery-map-picker.js": "src/jquery-map-picker.js"
-        }
+      options: {
+        transform: [["babelify", { stage: 0 }]]
+      },
+      files: {
+        expand: true,
+        cwd: 'src/',
+        src: ['**/*.js', '!maps/base.js'],
+        dest: 'dist/'
       }
     },
 
@@ -27,9 +29,12 @@ module.exports = function(grunt) {
         sourceMap: true,
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
-      build: {
-        src: 'dist/jquery-map-picker.js',
-        dest: 'dist/jquery-map-picker.min.js'
+      files: {
+        expand: true,
+        cwd: 'dist/',
+        src: ['**/*.js', '!**/*.min.js'],
+        ext: '.min.js',
+        dest: 'dist/'
       }
     },
 
