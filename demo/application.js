@@ -1,3 +1,3 @@
 $(document).ready(function() {
-  $('#address').mapPicker({ map: 'amap' });
+  $('.address-picker').addressPicker({ map: 'amap' });
 });

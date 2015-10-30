@@ -15,27 +15,66 @@ var _base = require('./base');
 
 var _base2 = _interopRequireDefault(_base);
 
-var AMapPicker = (function (_MapPicker) {
-  _inherits(AMapPicker, _MapPicker);
+var AMapAddressPicker = (function (_AddressPicker) {
+  _inherits(AMapAddressPicker, _AddressPicker);
 
-  function AMapPicker() {
-    _classCallCheck(this, AMapPicker);
+  function AMapAddressPicker() {
+    _classCallCheck(this, AMapAddressPicker);
 
-    _get(Object.getPrototypeOf(AMapPicker.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(AMapAddressPicker.prototype), 'constructor', this).apply(this, arguments);
   }
 
-  _createClass(AMapPicker, [{
-    key: 'init',
-    value: function init() {
-      _get(Object.getPrototypeOf(AMapPicker.prototype), 'init', this).call(this);
-      this.map = new AMap.Map(this.id, { zoom: 16 });
+  _createClass(AMapAddressPicker, [{
+    key: 'initInput',
+    value: function initInput() {
+      var _this = this;
+
+      _get(Object.getPrototypeOf(AMapAddressPicker.prototype), 'initInput', this).call(this);
+
+      AMap.service(['AMap.Autocomplete'], function () {
+        var auto = new AMap.Autocomplete();
+        var bb = new Bloodhound({
+          datumTokenizer: function datumTokenizer(d) {
+            return [d.name, d.district];
+          },
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          remote: {
+            url: '%QUERY',
+            wildcard: '%QUERY',
+            transport: function transport(query, onSuccess, onError) {
+              auto.search(decodeURIComponent(query.url), function (status, result) {
+                if (status == 'complete') {
+                  onSuccess(result.tips);
+                } else {
+                  onSuccess([]);
+                }
+              });
+            }
+          }
+        });
+        bb.initialize();
+
+        _this.$input.typeahead({
+          hint: true,
+          highlight: true
+        }, {
+          display: function display(tip) {
+            return tip.district + tip.name;
+          },
+          name: 'amap-places',
+          source: bb.ttAdapter()
+        });
+      });
+
+      // this.map = new AMap.Map(this.id, { zoom: 16 });
+      // this.initAutoComplete();
     }
   }]);
 
-  return AMapPicker;
+  return AMapAddressPicker;
 })(_base2['default']);
 
-jQuery.fn.mapPicker.maps.amap = AMapPicker;
+jQuery.fn.addressPicker.maps.amap = AMapAddressPicker;
 
 },{"./base":2}],2:[function(require,module,exports){
 'use strict';
@@ -48,57 +87,57 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var MapPicker = (function () {
-  function MapPicker($element) {
+var AddressPicker = (function () {
+  function AddressPicker($input) {
     var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-    _classCallCheck(this, MapPicker);
+    _classCallCheck(this, AddressPicker);
 
-    this.$element = $element;
+    this.$input = $input;
     this.id = this._generateUniqueId();
     this.options = options;
 
-    this.init();
+    this.initInput();
   }
 
-  _createClass(MapPicker, [{
+  _createClass(AddressPicker, [{
     key: '_generateUniqueId',
     value: function _generateUniqueId() {
       var date = Date.now();
       var salt = Math.floor(Math.random() * 26);
-      return 'map-picker-' + date + '-' + salt;
+      return 'address-picker-' + date + '-' + salt;
     }
   }, {
-    key: '_makeMapContainer',
-    value: function _makeMapContainer() {
-      var $container = this.$element.closest('#' + this.id);
-
-      if ($container.size() === 0) {
-        $container = $('<div id="' + this.id + '"></div>');
-        $container.css({ 'width': '100%', 'min-height': '300px' });
-
-        console.log(this.$element.closest('.map-container'));
-        if (this.$element.closest('.map-container').size()) {
-
-          this.$element.closest('.map-container').append($container);
-        } else {
-          this.$element.after($container);
-        }
+    key: 'initInput',
+    value: function initInput() {
+      if (!this.$input.attr('id')) {
+        this.$input.attr('id', 'input-' + this.id);
       }
+    }
 
-      return $container;
-    }
-  }, {
-    key: 'init',
-    value: function init() {
-      this.$container = this._makeMapContainer();
-    }
+    // _makeMapContainer() {
+    //   var $container = this.$element.closest(`#${this.id}`);
+
+    //   if ($container.size() === 0) {
+    //     $container = $(`<div id="${this.id}"></div>`);
+    //     $container.css({ 'width': '100%', 'min-height': '300px' });
+
+    //     if (this.$element.closest('.map-container').size()) {
+
+    //       this.$element.closest('.map-container').append($container);
+    //     } else {
+    //       this.$element.after($container);
+    //     }
+    //   }
+
+    //   return $container;
+    // }
   }]);
 
-  return MapPicker;
+  return AddressPicker;
 })();
 
-exports['default'] = MapPicker;
+exports['default'] = AddressPicker;
 module.exports = exports['default'];
 
 },{}]},{},[1]);
